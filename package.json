@@ -12,10 +12,12 @@
     "@mdi/font": "^5.9.55",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "firebase": "^8.3.3",
     "jquery": "^3.6.0",
     "mdbvue": "^5.4.1",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
+    "vuefire": "^2.2.5",
     "vuetify": "^2.4.0"
   },
   "devDependencies": {
