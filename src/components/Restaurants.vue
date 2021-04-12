@@ -412,23 +412,137 @@
                 style="color: #FF5722;"
                 color="lighten-2"
                 text
-                @click="reserve(selectedRestaurant)"
+                @click="addReservation()"
             >
               Reserver
             </v-btn>
           </v-card-actions>
         </v-card>
       </div>
+
+      <v-dialog
+          v-model="dialog"
+          persistent
+          max-width="700px"
+      >
+        <v-card>
+          <v-card-title>
+            <span class="headline">Faire une réservation</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col
+                    cols="12"
+                    sm="6"
+                    md="6"
+                >
+                  <v-text-field
+                      v-model="reserveName"
+                      label="Nom*"
+                      required
+                  ></v-text-field>
+                </v-col>
+                <v-col
+                    cols="12"
+                    sm="6"
+                    md="6"
+                >
+                  <v-text-field
+                      v-model="reserveEmail"
+                      label="Email*"
+                      required
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                    cols="6"
+                >
+                  <v-date-picker
+                      v-model="reserveDate"
+                      show-adjacent-months
+                      header-color="#FF5722"
+                  ></v-date-picker>
+                </v-col>
+                <v-col
+                    cols="6"
+                >
+                  <v-time-picker
+                      v-model="reserveTime"
+                      header-color="#FF5722"
+                      format="24hr"
+                  ></v-time-picker>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12">
+                  <v-select
+                      v-model="reserveNbPersons"
+                      :items="nbPersons"
+                      label="Nombre de personnes*"
+                  ></v-select>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12">
+                  <v-textarea
+                      v-model="reserveMsg"
+                      solo
+                      name="input-7-4"
+                      label="Message particulier (falcultatif)"
+                  ></v-textarea>
+                </v-col>
+              </v-row>
+            </v-container>
+            <small>* Indique les champs obligatoires</small>
+            <v-alert
+                v-if="reserveErrorMsg !== ''"
+                dense
+                outlined
+                type="error"
+            >
+              {{ reserveErrorMsg }}
+            </v-alert>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+                color="blue darken-1"
+                text
+                @click="dialog = false"
+            >
+              Fermer
+            </v-btn>
+            <v-btn
+                color="blue darken-1"
+                text
+                @click="validateReservation()"
+            >
+              Ajouter
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </div>
   </div>
 </template>
 
 <script>
+  // Je n'ai malheureusement pas eu le temps de faire l'étape 4 et d'optimiser et
+  // clean mon code notament en découpant les éléments de ma page en différentes vues
+  // j'ai du aller au plus rapide :(
+
   import RestaurantService from '../services/restaurant.service'
   import Navigation from "@/components/Navigation";
 
   export default {
     name: "Restaurants",
+    firebase() {
+      return {
+        reservations: this.$db.ref("/reservations/")
+      };
+    },
     async created() {
       await this.getBaseRestaurants()
     },
@@ -445,6 +559,17 @@
         selectedRestaurant: '',
         search: false,
         loading: false,
+        dialog: false,
+        nbPersons: [1, 2, 3, 4, 5, 6],
+        reserveDate: null,
+        reserveName: '',
+        reserveEmail: '',
+        reserveHour: null,
+        reserveMsg: '',
+        reserveTime: '',
+        reserveNbPersons: null,
+        reserveErrorMsg: '',
+        reservations: [],
         form: Object.assign({}, defaultForm),
         rules: {
           location: [val => (val || '').length > 0 || 'Ce champ est requis'],
@@ -504,8 +629,33 @@
           console.error(e)
         }
       },
-      reserve(restaurant) {
-        console.log(restaurant)
+      addReservation() {
+        this.dialog = true
+      },
+      validateReservation() {
+        if (this.reserveName === '' || this.reserveEmail === '' || this.reserveDate === null
+            || this.reserveTime === null || this.reserveNbPersons === null) {
+          this.reserveErrorMsg = 'Certains champs obligatoires ne sont pas renseignés'
+        } else {
+          this.reserveErrorMsg = ''
+
+          const data = {
+            'restaurantId': this.selectedRestaurant.id,
+            'name': this.reserveName,
+            'email': this.reserveEmail,
+            'day': this.reserveDate,
+            'hour': this.reserveTime,
+            'nbPersons': this.reserveNbPersons,
+            'message': this.reserveMsg,
+            'isCheckout': false,
+          }
+
+          console.log(this.$firebaseRefs)
+
+          this.$firebaseRefs.reservations.push(data);
+
+          this.dialog = false
+        }
       }
     }
   }

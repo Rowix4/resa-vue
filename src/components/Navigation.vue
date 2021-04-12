@@ -7,11 +7,6 @@
       <mdb-navbar-toggler>
         <mdb-navbar-nav>
         </mdb-navbar-nav>
-        <form>
-          <input class="mr-5 search-header_input" style="max-width: 300px;" v-model="nameSearchValue" placeholder="Rechercher par nom">
-          <input class="mr-5 search-header_input" style="max-width: 150px;" v-model="locationSearchValue" placeholder="Par ville">
-          <button class="search-header_button" v-on:click="getSearchRestaurants()">Chercher</button>
-        </form>
       </mdb-navbar-toggler>
     </mdb-navbar>
   </mdb-container>
@@ -28,17 +23,6 @@
       mdbNavbarToggler,
       mdbNavbarNav,
       mdbContainer
-    },
-    data() {
-      return {
-        'nameSearchValue': '',
-        'locationSearchValue': '',
-      }
-    },
-    methods: {
-      getSearchRestaurants() {
-
-      },
     },
   }
 </script>
