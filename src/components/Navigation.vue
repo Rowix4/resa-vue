@@ -55,14 +55,6 @@
     color: white;
   }
 
-  .link {
-    color: white!important;
-  }
-
-  .link:hover {
-    opacity: 0.6;
-  }
-
   .container input {
     color: white;
   }

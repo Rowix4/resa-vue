@@ -4,7 +4,7 @@
       <div class="search-header_background"></div>
       <div class="search-header">
         <div class="search-header_content">
-          <h1>ResaVue</h1>
+          <a class="link" style="color: #FF5722!important;" href="/home"><h1>ResaVue</h1></a>
 
           <v-form
               ref="form"
@@ -42,7 +42,15 @@
       <div v-if="!search">
         <div>
           <h3 style="margin-top: 40px; margin-left: 80px; margin-bottom: -40px;">Lieux ouverts à Lyon</h3>
+          <div class='loader-container' v-if="loading">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
           <v-slide-group
+              v-if="!loading"
               class="pa-4"
               active-class="success"
               show-arrows
@@ -111,10 +119,18 @@
 
         <div>
           <h3 style="margin-top: 40px; margin-left: 80px; margin-bottom: -40px;">Lieux ouverts à Paris</h3>
+          <div class='loader-container' v-if="loading">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
           <v-slide-group
               class="pa-4"
               active-class="success"
               show-arrows
+              v-if="!loading"
           >
             <v-slide-item
                 v-for="restaurant in parisRestaurants"
@@ -180,7 +196,15 @@
 
         <div>
           <h3 style="margin-top: 40px; margin-left: 80px; margin-bottom: -40px;">Lieux ouverts à Marseille</h3>
+          <div class='loader-container' v-if="loading">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
           <v-slide-group
+              v-if="!loading"
               class="pa-4"
               active-class="success"
               show-arrows
@@ -255,6 +279,10 @@
           <div></div>
           <div></div>
           <div></div>
+        </div>
+
+        <div v-if="searchRestaurants.length === 0 && searchRestaurants !== ''">
+          <h3 style="margin-top: 40px; margin-left: 80px; margin-bottom: -40px;">Aucun résultats</h3>
         </div>
 
         <div v-if="searchRestaurants !== ''" class="d-flex flex-wrap justify-space-between mr-10 ml-10">
@@ -437,6 +465,8 @@
     methods: {
       async getBaseRestaurants() {
         try {
+          this.loading = true
+
           let baseLyonRestaurants = await RestaurantService.getBaseRestaurants('Lyon')
           this.lyonRestaurants = baseLyonRestaurants.businesses
 
@@ -445,6 +475,8 @@
 
           let baseMarseilleRestaurants = await RestaurantService.getBaseRestaurants('Marseille')
           this.marseilleRestaurants = baseMarseilleRestaurants.businesses
+
+          this.loading = false
         } catch (e) {
           console.error(e)
         }
@@ -457,8 +489,6 @@
           open.start = open.start.slice(0, 2) + "h" + open.start.slice(2);
           open.end = open.end.slice(0, 2) + "h" + open.end.slice(2);
         })
-
-        console.log(this.selectedRestaurant)
       },
       async getSearchRestaurants() {
         try {
@@ -466,7 +496,7 @@
           this.search = true
           this.loading = true
 
-          let searchRestaurantsResult = await RestaurantService.getSearchRestaurants(this.form.name, this.form.city)
+          let searchRestaurantsResult = await RestaurantService.getSearchRestaurants(this.form.location, this.form.name)
           this.searchRestaurants = searchRestaurantsResult.businesses
 
           this.loading = false
@@ -485,14 +515,13 @@
   .loader-container {
     width: 50%;
     height: 50%;
-    position: relative;
-    margin-left: 25%;
+    margin-left: 42%;
     margin-top: 100px;
+    margin-bottom: 100px;
     filter: url(#gooey);
   }
 
   .loader-container > * {
-    position: absolute;
     display: inline-block;
     left: 0;
     width: 4rem;

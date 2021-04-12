@@ -63,4 +63,13 @@
     color: #FF5722!important;
     background-color: white;
   }
+
+  .link {
+    color: white!important;
+  }
+
+  .link:hover {
+    opacity: 0.6;
+  }
+
 </style>
